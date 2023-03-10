@@ -2,7 +2,6 @@ package ru.fintech.kerberos.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.fintech.kerberos.client.KerberosPostgresClient;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -21,7 +20,7 @@ public final class ConnectionPool {
   private static final Integer DEFAULT_POOL_SIZE = 10;
   private static final String POOL_SIZE_KEY = "db.pool.size";
 
-  private final static Logger log = LoggerFactory.getLogger(KerberosPostgresClient.class);
+  private final static Logger log = LoggerFactory.getLogger(ConnectionPool.class);
 
 
   private static BlockingQueue<Connection> pool;
