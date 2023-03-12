@@ -14,7 +14,6 @@ public final class PropertiesUtil {
 
   static {
     loadProperties();
-    loadSystemProperties();
   }
 
   private PropertiesUtil() {
@@ -30,20 +29,6 @@ public final class PropertiesUtil {
     } catch (IOException e) {
       log.error("Error while trying loading properties from " +
           "application.properties file:\n");
-      throw new RuntimeException(e);
-    }
-  }
-
-  private static void loadSystemProperties() {
-    try (InputStream inputStream = PropertiesUtil.class.getClassLoader()
-        .getResourceAsStream("system.properties"))
-    {
-      Properties systemProperties = new Properties(System.getProperties());
-      systemProperties.load(inputStream);
-      System.setProperties(systemProperties);  // changes the set of system properties for the current running application
-    } catch (IOException e) {
-      log.error("Error while trying loading system properties from " +
-          "system.properties file:\n");
       throw new RuntimeException(e);
     }
   }

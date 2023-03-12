@@ -1,0 +1,7 @@
+#!/bin/bash
+java -Djava.security.manager \
+-Djava.security.krb5.realm=HOPTO.ORG \
+-Djava.security.krb5.kdc=kerbserver.hopto.org \
+-Djava.security.auth.login.config=$HOME/jaas.conf \
+-Djava.security.policy=$HOME/jaasacn.policy \
+-jar target/JaasAcn-SM-1.0-SNAPSHOT.jar

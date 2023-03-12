@@ -13,9 +13,108 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <junit.version>5.9.2</junit.version>
-
-    <exec.mainClass>ru.fintech.kerberos.client.KerberosPostgresClient</exec.mainClass>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>tutorial_jaas</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <exec.mainClass>ru.fintech.kerberos.tutorial.JaasAcn</exec.mainClass>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>${basedir}/src/main/resources/tutorial</directory>
+            <filtering>false</filtering>
+            <excludes>
+              <exclude>commands</exclude>
+              <exclude>security-manager/</exclude>
+            </excludes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/client/*.java</exclude>
+                <exclude>**/ConnectionPool.java</exclude>
+                <exclude>**/PropertiesUtil.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+        <finalName>JaasAcn-${project.version}</finalName>
+      </build>
+    </profile>
+    <profile>
+      <id>tutorial_jaas_SM</id>
+      <properties>
+        <exec.mainClass>ru.fintech.kerberos.tutorial.JaasAcn</exec.mainClass>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>${basedir}/src/main/resources/tutorial/security-manager</directory>
+            <filtering>false</filtering>
+          </resource>
+          <resource>
+            <directory>${basedir}/src/main/resources/tutorial/</directory>
+            <filtering>false</filtering>
+            <includes>
+              <include>jaas.conf</include>
+            </includes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/client/*.java</exclude>
+                <exclude>**/ConnectionPool.java</exclude>
+                <exclude>**/PropertiesUtil.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+        <finalName>JaasAcn-SM-${project.version}</finalName>
+      </build>
+    </profile>
+    <profile>
+      <id>postgres</id>
+      <properties>
+        <exec.mainClass>ru.fintech.kerberos.client.KerberosPostgresClient</exec.mainClass>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>${basedir}/src/main/resources</directory>
+            <filtering>true</filtering>
+            <excludes>
+              <exclude>tutorial/</exclude>
+            </excludes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/tutorial/*.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -69,33 +168,10 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <filtering>true</filtering>
-        <excludes>
-          <exclude>non-existing-file.properties</exclude>
-        </excludes>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-wrapper-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>${exec.mainClass}</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -113,6 +189,19 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>${exec.mainClass}</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
       </plugin>
     </plugins>
 
@@ -196,6 +285,5 @@
       </plugins>
     </pluginManagement>
   </build>
-
 
 </project>
