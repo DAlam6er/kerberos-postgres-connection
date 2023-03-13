@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ru.fintech</groupId>
-  <artifactId>postgres-kerberos-test</artifactId>
+  <artifactId>kerberos-authenticate-authorize</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -17,12 +17,12 @@
 
   <profiles>
     <profile>
-      <id>tutorial_jaas</id>
+      <id>tutorial-jaas-authenticate</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <exec.mainClass>ru.fintech.kerberos.tutorial.JaasAcn</exec.mainClass>
+        <exec.mainClass>ru.fintech.kerberos.tutorial.authentication.JaasAcn</exec.mainClass>
       </properties>
       <build>
         <resources>
@@ -42,6 +42,7 @@
             <configuration>
               <excludes>
                 <exclude>**/client/*.java</exclude>
+                <exclude>**/authorization/*.java</exclude>
                 <exclude>**/ConnectionPool.java</exclude>
                 <exclude>**/PropertiesUtil.java</exclude>
               </excludes>
@@ -52,15 +53,15 @@
       </build>
     </profile>
     <profile>
-      <id>tutorial_jaas_SM</id>
+      <id>tutorial-jaas-authorize</id>
       <properties>
-        <exec.mainClass>ru.fintech.kerberos.tutorial.JaasAcn</exec.mainClass>
+        <exec.mainClass>ru.fintech.kerberos.tutorial.authorization.JaasAzn</exec.mainClass>
       </properties>
       <build>
         <resources>
           <resource>
             <directory>${basedir}/src/main/resources/tutorial/security-manager</directory>
-            <filtering>false</filtering>
+            <filtering>true</filtering>
           </resource>
           <resource>
             <directory>${basedir}/src/main/resources/tutorial/</directory>
@@ -83,7 +84,7 @@
             </configuration>
           </plugin>
         </plugins>
-        <finalName>JaasAcn-SM-${project.version}</finalName>
+        <finalName>JaasAzn-${project.version}</finalName>
       </build>
     </profile>
     <profile>
@@ -91,6 +92,12 @@
       <properties>
         <exec.mainClass>ru.fintech.kerberos.client.KerberosPostgresClient</exec.mainClass>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+        </dependency>
+      </dependencies>
       <build>
         <resources>
           <resource>
@@ -118,6 +125,26 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>ru.fintech</groupId>
+        <artifactId>jaas-authorized-actions</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ru.fintech</groupId>
+            <artifactId>kerberos-authenticate-authorize</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
@@ -158,8 +185,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>ru.fintech</groupId>
+      <artifactId>jaas-authorized-actions</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -179,10 +206,10 @@
         <executions>
           <execution>
             <id>create-lib</id>
+            <phase>prepare-package</phase>
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
-            <phase>prepare-package</phase>
             <configuration>
               <outputDirectory>${project.build.directory}/lib
               </outputDirectory>

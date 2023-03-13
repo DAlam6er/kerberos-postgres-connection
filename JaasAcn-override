@@ -1,4 +1,5 @@
 #!/bin/bash
+./mvnw clean package -P tutorial-jaas-authenticate
 java -Djava.security.krb5.realm=HOPTO.ORG \
 -Djava.security.krb5.kdc=kerbserver.hopto.org \
 -Djava.security.auth.login.config=$HOME/jaas.conf \

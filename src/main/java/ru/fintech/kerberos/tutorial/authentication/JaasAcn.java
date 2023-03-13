@@ -1,4 +1,4 @@
-package ru.fintech.kerberos.tutorial;
+package ru.fintech.kerberos.tutorial.authentication;
 
 import com.sun.security.auth.callback.TextCallbackHandler;
 import org.slf4j.Logger;
@@ -14,59 +14,36 @@ import javax.security.auth.login.LoginException;
  * <p>
  * To execute code:
  * mkdir compiled
- * javac src/main/java/ru/fintech/kerberos/tutorial/JaasAcn-override.java -d compiled
+ * javac src/main/java/ru/fintech/kerberos/tutorial/JaasAcn.java -d compiled
  * <p>
- * Execute the JaasAcn-override application, specifying<br>
+ * Execute the JaasAcn application, specifying<br>
  * java -cp compiled -Djava.security.krb5.realm=HOPTO.ORG
- *      -Djava.security.krb5.kdc=kerbserver.hopto.org
- *      -Djava.security.auth.login.config=src/main/resources/tutorial/jaas.conf
- *      ru.fintech.kerberos.tutorial.JaasAcn-override
- * <p>
- * To run an application with a security manager, simply invoke the
- * interpreter with a -Djava.security.manager argument included on the command line.
- * <p>
- * If you try invoking JaasAcn-override with a security manager but without
- * specifying any policy file, you will get the following:
- * WARNING: A command line option has enabled the Security Manager
- * WARNING: The Security Manager is deprecated and will be removed in a future release
- * Cannot create LoginContext. access denied ("javax.security.auth
- * .AuthPermission" "createLoginContext.JaasSample")<br>
- * To execute code with a Security Manager:<br>
- * 1) mkdir compiled<br>
- * 2) javac src/main/java/ru/fintech/kerberos/tutorial/JaasAcn-override.java -d compiled<br>
- * 3) jar -cvf compiled/JaasAcn-override.jar compiled/ru/fintech/kerberos/tutorial/JaasAcn-override.class<br>
- * 4) Create a policy file granting the code in the JAR file the
- * required permission.<br>The permission that is needed by code
- * attempting to instantiate a LoginContext is a
- * javax.security.auth.AuthPermission with target "createLoginContext.<entry name>".
- * Here, <entry name> refers to the name of the login configuration file entry
- * that the application references in its instantiation of LoginContext.
- *
- * Thus, the permission that needs to be granted to JaasAcn-override.jar is
- * permission javax.security.auth.AuthPermission "createLoginContext.JaasSample";
+ * -Djava.security.krb5.kdc=kerbserver.hopto.org
+ * -Djava.security.auth.login.config=src/main/resources/tutorial/jaas.conf
+ * ru.fintech.kerberos.tutorial.authentication.JaasAcn
  */
 public class JaasAcn {
   private final static Logger log = LoggerFactory.getLogger(JaasAcn.class);
+
+  private LoginContext loginContext = null;
+
+  public static void main(String[] args) {
+    new JaasAcn().authenticate();
+  }
 
   // Obtain a LoginContext, needed for authentication.
   // Tell it to use the LoginModule implementation specified by the
   // entry named "JaasSample" in the JAAS login configuration
   // file and to also use the specified CallbackHandler.
-  public static void main(String[] args) {
-    System.out.println("Security Manager:" + System.getSecurityManager());
-
-    log.info("java.security.manager: {}",
-        System.getProperty("java.security.manager"));
+  public void authenticate() {
     SystemPropertiesUtil.loadSystemProperties("system.properties");
     log.info("java.security.auth.login.config: {}",
         System.getProperty("java.security.auth.login.config"));
-    log.info("java.security.manager: {}",
-        System.getProperty("java.security.manager"));
+    log.info("java.security.manager enabled: {}",
+        System.getSecurityManager() != null);
     log.info("java.security.policy: {}",
         System.getProperty("java.security.policy"));
 
-    // 1) Instantiate a LoginContext.
-    LoginContext lc = null;
     try {
       // JaasSample          - The name of an entry in the JAAS login configuration file
       // TextCallbackHandler - A CallbackHandler instance
@@ -87,7 +64,7 @@ public class JaasAcn {
       // A simple CallbackHandler, TextCallbackHandler,
       // is provided in the com.sun.security.auth.callback package
       // to output information to and read input from the command line.
-      lc = new LoginContext("JaasSample", new TextCallbackHandler());
+      loginContext = new LoginContext("JaasSample", new TextCallbackHandler());
     } catch (LoginException | SecurityException ex) {
       log.error("Cannot create LoginContext. {}", ex.getMessage());
       System.exit(-1);
@@ -116,7 +93,7 @@ public class JaasAcn {
       // The calling application can subsequently **retrieve** the authenticated Subject
       // by calling the LoginContext's **getSubject** method,
       // although doing so is not necessary for this tutorial.
-      lc.login();
+      loginContext.login();
     } catch (LoginException ex) {
       log.error("Authentication failed:");
       log.error(" {}", ex.getMessage());
@@ -124,5 +101,9 @@ public class JaasAcn {
     }
 
     log.info("Authentication succeeded!");
+  }
+
+  public LoginContext getLoginContext() {
+    return loginContext;
   }
 }

@@ -1,8 +1,31 @@
 /**
  ** Java 2 Access Control Policy for the JaasAcn Application
- ** The permission that needs to be granted to JaasAcn.jar
+ ** The permission that needs to be granted to jar
  **/
-grant codebase "file:./JaasAcn.jar" {
-        permission javax.security.auth.AuthPermission
-        "createLoginContext.JaasSample";
+grant codebase "file:/mnt/c/Users/a.pashkin/ideaProjects/work/postgres-kerberos-test/target/JaasAzn-1.0-SNAPSHOT.jar" {
+
+	permission java.lang.RuntimePermission "readFileDescriptor";
+	permission java.lang.RuntimePermission "writeFileDescriptor";
+
+	permission java.util.PropertyPermission "*", "read,write";
+	permission javax.security.auth.AuthPermission "createLoginContext.JaasSample"; /** Login configuration name **/
+	permission javax.security.auth.AuthPermission "doAsPrivileged";
+
+	permission java.io.FilePermission "foo.txt", "read";
+};
+
+grant codeBase "file:/mnt/c/Users/a.pashkin/ideaProjects/work/postgres-kerberos-test/target/lib/jaas-authorized-actions-1.0.0-SNAPSHOT.jar",
+      Principal javax.security.auth.kerberos.KerberosPrincipal "client1@HOPTO.ORG" {
+	permission java.util.PropertyPermission "java.home", "read";
+	permission java.util.PropertyPermission "user.home", "read";
+	permission java.io.FilePermission "foo.txt", "read";
+};
+
+
+grant codeBase "file:/mnt/c/Users/a.pashkin/ideaProjects/work/postgres-kerberos-test/target/lib/slf4j-api-2.0.5.jar" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:/mnt/c/Users/a.pashkin/ideaProjects/work/postgres-kerberos-test/target/lib/slf4j-simple-2.0.5.jar" {
+	permission java.security.AllPermission;
 };
