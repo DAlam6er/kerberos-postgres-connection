@@ -27,15 +27,13 @@ public class JaasAcn {
 
   private LoginContext loginContext = null;
 
-  public static void main(String[] args) {
-    new JaasAcn().authenticate();
-  }
-
   // Obtain a LoginContext, needed for authentication.
   // Tell it to use the LoginModule implementation specified by the
   // entry named "JaasSample" in the JAAS login configuration
   // file and to also use the specified CallbackHandler.
+
   public void authenticate() {
+    log.info("Loading system properties...");
     SystemPropertiesUtil.loadSystemProperties("system.properties");
     log.info("java.security.auth.login.config: {}",
         System.getProperty("java.security.auth.login.config"));
@@ -64,14 +62,14 @@ public class JaasAcn {
       // A simple CallbackHandler, TextCallbackHandler,
       // is provided in the com.sun.security.auth.callback package
       // to output information to and read input from the command line.
+      log.info("Initiating loginContext...");
       loginContext = new LoginContext("JaasSample", new TextCallbackHandler());
+      log.info("loginContext successfully initiated");
     } catch (LoginException | SecurityException ex) {
       log.error("Cannot create LoginContext. {}", ex.getMessage());
       System.exit(-1);
     }
 
-    // 2) Call the LoginContext's login method.
-    // attempt authentication
     try {
       // The LoginContext instantiates a new empty javax.security.auth.Subject object
       // (which represents the **user** or **service** being  authenticated).
@@ -93,17 +91,21 @@ public class JaasAcn {
       // The calling application can subsequently **retrieve** the authenticated Subject
       // by calling the LoginContext's **getSubject** method,
       // although doing so is not necessary for this tutorial.
+      log.info("Attempt to authenticate...");
       loginContext.login();
+      log.info("Authentication succeeded!");
     } catch (LoginException ex) {
       log.error("Authentication failed:");
       log.error(" {}", ex.getMessage());
       System.exit(-1);
     }
-
-    log.info("Authentication succeeded!");
   }
 
   public LoginContext getLoginContext() {
     return loginContext;
+  }
+
+  public static void main(String[] args) {
+    new JaasAcn().authenticate();
   }
 }

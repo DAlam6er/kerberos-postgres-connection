@@ -42,9 +42,10 @@ public class JaasAzn {
     jaasAcn.authenticate();
     LoginContext loginContext = jaasAcn.getLoginContext();
 
-    // now try to execute the SampleAction as the authenticated Subject
+    log.info("Trying to execute some actions as the authenticated " +
+        "Subject");
     Subject mySubject = loginContext.getSubject();
-    PrivilegedAction<JaasAzn> action = new SampleAction();
+    PrivilegedAction<? extends JaasAzn> action = new SampleAction();
     Subject.doAsPrivileged(mySubject, action, null);
   }
 }

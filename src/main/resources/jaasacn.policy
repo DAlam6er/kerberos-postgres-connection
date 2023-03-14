@@ -1,0 +1,36 @@
+/**
+ ** Java 2 Access Control Policy for the JaasAcn Application
+ ** The permission that needs to be granted to jar
+ **/
+
+grant codebase "file:./target/kerberos-authenticate-authorize-1.0.0-SNAPSHOT.jar" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "file:./target/lib/postgresql-42.5.4.jar" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:./target/lib/slf4j-api-2.0.5.jar" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:./target/lib/slf4j-simple-2.0.5.jar" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:./target/lib/jaas-authorized-actions-1.0.0-SNAPSHOT.jar",
+	  Principal javax.security.auth.kerberos.KerberosPrincipal
+        "${user.name}@${java.security.krb5.realm}" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:./target/lib/jaas-authorized-actions-1.0.0-SNAPSHOT.jar",
+	  Principal javax.security.auth.kerberos.KerberosPrincipal
+        "client1@${java.security.krb5.realm}" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:./target/lib/jaas-authorized-actions-1.0.0-SNAPSHOT.jar" {
+	permission java.util.PropertyPermission "*", "read,write";
+};
